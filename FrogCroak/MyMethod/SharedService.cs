@@ -152,37 +152,6 @@ namespace FrogCroak.MyMethod
             }
         }
 
-        public static bool isRoot()
-        {
-
-            bool root = false;
-
-            try
-            {
-                if ((!File.Exists("/system/bin/su")) && (!File.Exists("/system/xbin/su")))
-                {
-                    root = false;
-                }
-                else
-                {
-                    root = true;
-                }
-            }
-            catch (Exception e)
-            {
-            }
-
-            return root;
-        }
-
-        public static bool isFromGooglePlay(Context mContext)
-        {
-            string InstallerPackageName = mContext.PackageManager.GetInstallerPackageName(mContext.PackageName);
-            if (InstallerPackageName != null)
-                return InstallerPackageName == "com.android.vending";
-            return false;
-        }
-
         public static void WebExceptionHandler(WebException exception, Context mContext)
         {
             if (exception.Status == WebExceptionStatus.ProtocolError && exception.Response != null)

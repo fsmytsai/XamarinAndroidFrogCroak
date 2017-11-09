@@ -5,6 +5,8 @@ using Android.Views;
 using Android.Widget;
 using Android.Support.V4.View;
 using FrogCroak.Views;
+using Java.Lang;
+using Java.IO;
 
 namespace FrogCroak.MyMethod
 {
@@ -41,35 +43,40 @@ namespace FrogCroak.MyMethod
                 Button bt_StartConGroup = (Button)view.FindViewById(Resource.Id.bt_StartConGroup);
                 bt_StartConGroup.Click += delegate
                 {
-                    if (SharedService.isRoot())
+                    bool root = isRoot();
+                    bool fromGooglePlay = isFromGooglePlay();
+                    string ErrorMessage = "";
+                    if (root && !fromGooglePlay)
                     {
-                        new AlertDialog.Builder(mainActivity)
-                                .SetTitle("危險")
-                                .SetMessage("您的手機已 Root ，無法使用本程式")
-                                .SetIcon(Resource.Drawable.Icon)
-                                .SetNegativeButton("QQ", delegate
-                                {
-                                })
-                                .Show();
+                        ErrorMessage = "您不但 Root 且還不是從 Google Play 安裝，壞透了，不給你用。";
                     }
-                    else if (!SharedService.isFromGooglePlay(mainActivity))
+                    else if (root)
                     {
-                        new AlertDialog.Builder(mainActivity)
-                                .SetTitle("警告")
-                                .SetMessage("您並非使用 Google Play 安裝，無法使用本程式")
-                                .SetIcon(Resource.Drawable.Icon)
-                                .SetNegativeButton("QQ", delegate
-                                {
-                                })
-                                .Show();
+                        ErrorMessage = "您的手機已 Root ，無法使用本程式。";
                     }
-                    else
+                    else if (!fromGooglePlay)
+                    {
+                        ErrorMessage = "您並非使用 Google Play 安裝，無法使用本程式。";
+                    }
+
+                    if (ErrorMessage == "")
                     {
                         sp_Settings.Edit().PutBoolean("IsNeverIntro", ctv_NeverIntro.Checked).Apply();
                         mainActivity.SupportFragmentManager
                                 .BeginTransaction()
                                 .Replace(Resource.Id.MainFrameLayout, new HomeFragment(), "HomeFragment")
                                 .Commit();
+                    }
+                    else
+                    {
+                        new AlertDialog.Builder(mainActivity)
+                                .SetTitle("錯誤")
+                                .SetMessage(ErrorMessage)
+                                .SetIcon(Resource.Drawable.Icon)
+                                .SetNegativeButton("QQ", delegate
+                                {
+                                })
+                                .Show();
                     }
                 };
             }
@@ -82,6 +89,53 @@ namespace FrogCroak.MyMethod
         public override bool IsViewFromObject(View view, Java.Lang.Object @object)
         {
             return view == @object;
+        }
+
+        public bool isRoot()
+        {
+            string binPath = "/system/bin/su";
+            string xBinPath = "/system/xbin/su";
+            if (new File(binPath).Exists() && isExecutable(binPath))
+                return true;
+            if (new File(xBinPath).Exists() && isExecutable(xBinPath))
+                return true;
+            return false;
+        }
+
+        private bool isExecutable(string filePath)
+        {
+            Process p = null;
+            try
+            {
+                p = Runtime.GetRuntime().Exec("ls -l " + filePath);
+                BufferedReader br = new BufferedReader(new InputStreamReader(p.InputStream));
+                string str = br.ReadLine();
+                if (str != null && str.Length >= 4)
+                {
+                    char flag = str[3];
+                    if (flag == 's' || flag == 'x')
+                        return true;
+                }
+            }
+            catch (Exception e)
+            {
+            }
+            finally
+            {
+                if (p != null)
+                {
+                    p.Destroy();
+                }
+            }
+            return false;
+        }
+
+        public bool isFromGooglePlay()
+        {
+            string InstallerPackageName = mainActivity.PackageManager.GetInstallerPackageName(mainActivity.PackageName);
+            if (InstallerPackageName != null)
+                return InstallerPackageName == "com.android.vending";
+            return false;
         }
     }
 }
