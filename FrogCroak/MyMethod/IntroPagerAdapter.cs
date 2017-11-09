@@ -21,12 +21,12 @@ namespace FrogCroak.MyMethod
             mainActivity = mMainActivity;
         }
 
-        public override void DestroyItem(ViewGroup container, int position, Java.Lang.Object @object)
+        public override void DestroyItem(ViewGroup container, int position, Object @object)
         {
             container.RemoveView((View)@object);
         }
 
-        public override Java.Lang.Object InstantiateItem(ViewGroup container, int position)
+        public override Object InstantiateItem(ViewGroup container, int position)
         {
             View view = viewList[position];
             if (position == 3)
@@ -86,7 +86,7 @@ namespace FrogCroak.MyMethod
 
         public override int Count => viewList.Count;
 
-        public override bool IsViewFromObject(View view, Java.Lang.Object @object)
+        public override bool IsViewFromObject(View view, Object @object)
         {
             return view == @object;
         }

@@ -178,7 +178,10 @@ namespace FrogCroak.MyMethod
                             .Show();
                 }
             }
-            ShowTextToast("請檢察網路連線", mContext);
+            else
+            {
+                ShowTextToast("請檢察網路連線", mContext);
+            }
         }
     }
 }
