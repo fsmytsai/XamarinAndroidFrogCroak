@@ -1,13 +1,6 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-
 using Android.App;
 using Android.Content;
-using Android.OS;
-using Android.Runtime;
-using Android.Views;
 using Android.Widget;
 using Android.Content.Res;
 using Android.Net;
@@ -15,6 +8,8 @@ using Android.Views.InputMethods;
 using Android.Graphics;
 using System.IO;
 using Android.Media;
+using System.Net;
+using Newtonsoft.Json;
 
 namespace FrogCroak.MyMethod
 {
@@ -155,6 +150,66 @@ namespace FrogCroak.MyMethod
                 e.PrintStackTrace();
                 return null;
             }
+        }
+
+        public static bool isRoot()
+        {
+
+            bool root = false;
+
+            try
+            {
+                if ((!File.Exists("/system/bin/su")) && (!File.Exists("/system/xbin/su")))
+                {
+                    root = false;
+                }
+                else
+                {
+                    root = true;
+                }
+            }
+            catch (Exception e)
+            {
+            }
+
+            return root;
+        }
+
+        public static bool isFromGooglePlay(Context mContext)
+        {
+            string InstallerPackageName = mContext.PackageManager.GetInstallerPackageName(mContext.PackageName);
+            if (InstallerPackageName != null)
+                return InstallerPackageName == "com.android.vending";
+            return false;
+        }
+
+        public static void WebExceptionHandler(WebException exception, Context mContext)
+        {
+            if (exception.Status == WebExceptionStatus.ProtocolError && exception.Response != null)
+            {
+                var response = (HttpWebResponse)exception.Response;
+                if (response.StatusCode == HttpStatusCode.BadRequest)
+                {
+                    using (StreamReader reader = new StreamReader(response.GetResponseStream()))
+                    {
+                        var content = reader.ReadToEnd();
+                        string result = JsonConvert.DeserializeObject<String>(content);
+                        ShowTextToast(result, mContext);
+                    }
+                }
+                else if (response.StatusCode == HttpStatusCode.InternalServerError)
+                {
+                    new AlertDialog.Builder(mContext)
+                            .SetTitle("錯誤")
+                            .SetMessage("伺服器錯誤，請聯絡開發人員")
+                            .SetIcon(Resource.Drawable.Icon)
+                            .SetPositiveButton("好的", delegate
+                            {
+                            })
+                            .Show();
+                }
+            }
+            ShowTextToast("請檢察網路連線", mContext);
         }
     }
 }

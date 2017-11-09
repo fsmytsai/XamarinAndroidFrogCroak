@@ -10,13 +10,13 @@ namespace FrogCroak.MyMethod
 {
     public class IntroPagerAdapter : PagerAdapter
     {
-        private List<View> mListViews;
+        private List<View> viewList;
         private MainActivity mainActivity;
 
-        public IntroPagerAdapter(List<View> mListViews, Activity mActivity)
+        public IntroPagerAdapter(List<View> mViewList, MainActivity mMainActivity)
         {
-            this.mListViews = mListViews;
-            mainActivity = (MainActivity)mActivity;
+            this.viewList = mViewList;
+            mainActivity = mMainActivity;
         }
 
         public override void DestroyItem(ViewGroup container, int position, Java.Lang.Object @object)
@@ -26,7 +26,7 @@ namespace FrogCroak.MyMethod
 
         public override Java.Lang.Object InstantiateItem(ViewGroup container, int position)
         {
-            View view = mListViews[position];
+            View view = viewList[position];
             if (position == 3)
             {
 
@@ -41,18 +41,43 @@ namespace FrogCroak.MyMethod
                 Button bt_StartConGroup = (Button)view.FindViewById(Resource.Id.bt_StartConGroup);
                 bt_StartConGroup.Click += delegate
                 {
-                    sp_Settings.Edit().PutBoolean("IsNeverIntro", ctv_NeverIntro.Checked).Apply();
-                    mainActivity.SupportFragmentManager
-                            .BeginTransaction()
-                            .Replace(Resource.Id.MainFrameLayout, new HomeFragment(), "HomeFragment")
-                            .Commit();
+                    if (SharedService.isRoot())
+                    {
+                        new AlertDialog.Builder(mainActivity)
+                                .SetTitle("危險")
+                                .SetMessage("您的手機已 Root ，無法使用本程式")
+                                .SetIcon(Resource.Drawable.Icon)
+                                .SetNegativeButton("QQ", delegate
+                                {
+                                })
+                                .Show();
+                    }
+                    else if (!SharedService.isFromGooglePlay(mainActivity))
+                    {
+                        new AlertDialog.Builder(mainActivity)
+                                .SetTitle("警告")
+                                .SetMessage("您並非使用 Google Play 安裝，無法使用本程式")
+                                .SetIcon(Resource.Drawable.Icon)
+                                .SetNegativeButton("QQ", delegate
+                                {
+                                })
+                                .Show();
+                    }
+                    else
+                    {
+                        sp_Settings.Edit().PutBoolean("IsNeverIntro", ctv_NeverIntro.Checked).Apply();
+                        mainActivity.SupportFragmentManager
+                                .BeginTransaction()
+                                .Replace(Resource.Id.MainFrameLayout, new HomeFragment(), "HomeFragment")
+                                .Commit();
+                    }
                 };
             }
             container.AddView(view);
             return view;
         }
 
-        public override int Count => mListViews.Count;
+        public override int Count => viewList.Count;
 
         public override bool IsViewFromObject(View view, Java.Lang.Object @object)
         {

@@ -10,6 +10,7 @@ using Java.IO;
 using FrogCroak.Models;
 using System.Threading.Tasks;
 using FrogCroak.Services;
+using System.Net;
 
 namespace FrogCroak.Views
 {
@@ -207,7 +208,7 @@ namespace FrogCroak.Views
                 }
                 else
                 {
-                    SharedService.ShowTextToast((string)result.Result, mainActivity);
+                    SharedService.WebExceptionHandler((WebException)result.Result, mainActivity);
                 }
             }
             else

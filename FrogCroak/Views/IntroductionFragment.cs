@@ -1,12 +1,5 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-
-using Android.Content;
+﻿using System.Collections.Generic;
 using Android.OS;
-using Android.Runtime;
-using Android.Util;
 using Android.Views;
 using Android.Widget;
 using Android.Support.V4.View;
@@ -14,28 +7,26 @@ using FrogCroak.MyMethod;
 using Android.Support.V4.App;
 using static Android.Support.V4.View.ViewPager;
 
-namespace FrogCroak
+namespace FrogCroak.Views
 {
     public class IntroductionFragment : Fragment
     {
         private ViewPager vp_Introduction;
         private RadioGroup rg_Introduction;
 
-        public override void OnCreate(Bundle savedInstanceState)
-        {
-            base.OnCreate(savedInstanceState);
-
-            // Create your fragment here
-        }
+        private MainActivity mainActivity;
 
         public override View OnCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState)
         {
             // Use this to return your custom view for this Fragment
             View view = inflater.Inflate(Resource.Layout.IntroductionFragment, container, false);
+
+            mainActivity = (MainActivity)Activity;
+
             vp_Introduction = (ViewPager)view.FindViewById(Resource.Id.vp_Introduction);
             rg_Introduction = (RadioGroup)view.FindViewById(Resource.Id.rg_Introduction);
 
-            LayoutInflater mInflater = LayoutInflater.From(Activity.ApplicationContext);
+            LayoutInflater mInflater = LayoutInflater.From(mainActivity);
 
             View v1 = mInflater.Inflate(Resource.Layout.Intro1, null);
             View v2 = mInflater.Inflate(Resource.Layout.Intro2, null);
@@ -48,13 +39,13 @@ namespace FrogCroak
             viewList.Add(v3);
             viewList.Add(v4);
 
-            vp_Introduction.Adapter = new IntroPagerAdapter(viewList, Activity);
+            vp_Introduction.Adapter = new IntroPagerAdapter(viewList, mainActivity);
             vp_Introduction.CurrentItem = 0;
             vp_Introduction.AddOnPageChangeListener(new OnPageChangeListener(rg_Introduction));
             return view;
         }
 
-        private class OnPageChangeListener : Java.Lang.Object,IOnPageChangeListener
+        private class OnPageChangeListener : Java.Lang.Object, IOnPageChangeListener
         {
 
             RadioGroup rg_Introduction;

@@ -16,6 +16,7 @@ using Java.Lang;
 using Android.Content.PM;
 using FrogCroak.Services;
 using System.Threading.Tasks;
+using System.Net;
 
 namespace FrogCroak.Views
 {
@@ -283,7 +284,7 @@ namespace FrogCroak.Views
                 }
                 else
                 {
-                    SharedService.ShowTextToast((string)result.Result, mainActivity);
+                    SharedService.WebExceptionHandler((WebException)result.Result, mainActivity);
                 }
             }
             else
@@ -413,7 +414,7 @@ namespace FrogCroak.Views
                 }
                 else
                 {
-                    SharedService.ShowTextToast((string)result.Result, mainActivity);
+                    SharedService.WebExceptionHandler((WebException)result.Result, mainActivity);
                 }
 
             }

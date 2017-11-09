@@ -8,9 +8,9 @@ using Android.Gms.Maps.Model;
 using FrogCroak.Models;
 using FrogCroak.Services;
 using System.Threading.Tasks;
-using Newtonsoft.Json;
-using Android.Database;
 using static FrogCroak.Models.MyMarkers;
+using Android.Database;
+using System.Net;
 
 namespace FrogCroak.Views
 {
@@ -57,7 +57,6 @@ namespace FrogCroak.Views
                     googleMap = map;
                     CustomInfoWindowAdapter adapter = new CustomInfoWindowAdapter(mainActivity, this);
                     googleMap.SetInfoWindowAdapter(adapter);
-
                     googleMap.Clear();
                     LatLng sydney = new LatLng(23.674764, 120.796819);
                     CameraPosition cameraPosition = new CameraPosition.Builder().Target(sydney).Zoom(7.3f).Build();
@@ -105,15 +104,16 @@ namespace FrogCroak.Views
                 });
                 if (result.IsSuccess)
                 {
-                    MyMarkers myMarkers = JsonConvert.DeserializeObject<MyMarkers>((string)result.Result);
+                    MyMarkers myMarkers = (MyMarkers)result.Result;
                     LatLng sydney = new LatLng(0, 0);
                     foreach (MyMarker myMarker in myMarkers.MarkerList)
                     {
                         sydney = new LatLng(myMarker.Latitude, myMarker.Longitude);
+                        myMarker.Content = myMarker.Content.Replace("\\n", "\n");
                         Marker marker = googleMap.AddMarker(new MarkerOptions()
                                 .SetPosition(sydney)
                                 .SetTitle(myMarker.Title)
-                                .SetSnippet(myMarker.Content.Replace("\\n", "\n"))
+                                .SetSnippet(myMarker.Content)
                                 .SetIcon(BitmapDescriptorFactory.FromResource(Resource.Drawable.normal))
                         );
                     }
@@ -122,7 +122,7 @@ namespace FrogCroak.Views
                 }
                 else
                 {
-                    SharedService.ShowTextToast((string)result.Result, mainActivity);
+                    SharedService.WebExceptionHandler((WebException)result.Result, mainActivity);
                 }
             }
 

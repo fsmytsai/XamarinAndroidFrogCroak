@@ -3393,9 +3393,6 @@ namespace FrogCroak
 			// aapt resource value: 0x7f07003b
 			public const int ApplicationName = 2131165243;
 			
-			// aapt resource value: 0x7f07003c
-			public const int BackEndPath = 2131165244;
-			
 			// aapt resource value: 0x7f07003a
 			public const int Hello = 2131165242;
 			
@@ -3552,8 +3549,8 @@ namespace FrogCroak
 			// aapt resource value: 0x7f07000f
 			public const int common_signin_button_text_long = 2131165199;
 			
-			// aapt resource value: 0x7f07003d
-			public const int google_maps_key = 2131165245;
+			// aapt resource value: 0x7f07003c
+			public const int google_maps_key = 2131165244;
 			
 			// aapt resource value: 0x7f070035
 			public const int password_toggle_content_description = 2131165237;
